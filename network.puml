@@ -1,0 +1,31 @@
+@startuml
+title Схема локальной сети (Локальный IP на VM1)
+
+skinparam componentStyle uml2
+
+cloud "Internet / External Net" as Internet #AliceBlue
+
+node "VM1 (Router/NAT)" as VM1 {
+    portin "enp0s3" as eth0_1
+    portout "enp0s8" as eth1_1
+    component "IP Forwarding & NAT" as NAT_logic
+}
+
+cloud "Internal LAN" as LAN #HoneyDew {
+    label "Сеть: 192.168.50.0/24"
+}
+
+node "VM2 (Client)" as VM2 {
+    portin "enp0s8" as eth1_2
+    component "DHCP Client" as DHCP_C
+}
+
+' Связи
+Internet <--- eth0_1 : WAN IP (DHCP/External)
+eth0_1 - NAT_logic
+NAT_logic - eth1_1
+
+eth1_1 <-down-> LAN : **192.168.50.1**
+LAN <-down-> eth1_2 : DHCP IP
+
+@enduml
